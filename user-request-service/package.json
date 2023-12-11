@@ -1,0 +1,9 @@
+{
+  "name": "user-request-service",
+  "version": "1.0.0",
+  
+  "devDependencies": {
+    "serverless-deployment-bucket": "^1.6.0",
+    "serverless-newrelic-lambda-layers": "^3.5.0"
+  }
+}

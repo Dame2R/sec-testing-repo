@@ -1,0 +1,68 @@
+frameworkVersion: ^3.25.1
+service: UserCreationService
+useDotenv: true
+plugins:
+  - serverless-deployment-bucket
+#  - serverless-newrelic-lambda-layers
+
+provider:
+  name: aws
+  deploymentMethod: direct
+  runtime: java8.al2    
+  deploymentBucket:
+    name: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-deployment-bucket
+    serverSideEncryption: AES256
+  environment:
+    USER_REQUESTS_BUCKET: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-user-requests-bucket
+    USER_TABLE: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-users
+
+    AWS_LAMBDA_EXEC_WRAPPER: ${env:AWS_LAMBDA_EXEC_WRAPPER}
+
+    NEWRELIC_LICENSE_KEY: ${env:NEWRELIC_LICENSE_KEY}
+    NEWRELIC_OTLP_ENDPOINT: ${env:NEWRELIC_OTLP_ENDPOINT}
+
+    OTEL_EXPORTER_OTLP_ENDPOINT: ${env:OTEL_EXPORTER_OTLP_ENDPOINT}
+    OTEL_METRICS_EXPORTER: ${env:OTEL_METRICS_EXPORTER}
+    OTEL_SERVICE_NAME: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-${env:OTEL_SERVICE_NAME}
+
+    OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED: ${env:OTEL_INSTRUMENTATION_COMMON_DEFAULT_ENABLED}
+#    OTEL_INSTRUMENTATION_AWS_LAMBDA_ENABLED: ${env:OTEL_INSTRUMENTATION_AWS_LAMBDA_ENABLED}
+#    OTEL_INSTRUMENTATION_AWS_SDK_ENABLED: ${env:OTEL_INSTRUMENTATION_AWS_SDK_ENABLED}
+
+    OPENTELEMETRY_COLLECTOR_CONFIG_FILE: ${env:OPENTELEMETRY_COLLECTOR_CONFIG_FILE}
+  versionFunctions: false
+  logRetentionInDays: 7  
+  region: ${opt:region, 'eu-west-1'}
+  stackName: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}
+
+package:
+  artifact: target/user-creation-service.jar
+
+
+layers:
+  OtelCollectorConfigLayer:
+    name: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-otel-collector-config-layer
+    description: Layer with otel collector config file
+    compatibleRuntimes:
+      - java8
+    package:
+      include:
+        - '*/**'
+    path: otel/
+
+functions:
+  - ${file(./functions/handlers.yml)}
+resources:
+  - ${file(./resources/dynamodb.yml)}
+  - ${file(./resources/iam-roles.yml)}
+
+  - Outputs:
+      ServerlessDeploymentBucketName:
+        Export:
+          Name: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}-ServerlessDeploymentBucketName
+
+#custom:
+#  newRelic:
+#    accountId: 3848941
+#    apiKey: 'NRAK-5BQ2EIAL80LTRPW1DY6079TPTVK'
+#    nrRegion: 'eu'

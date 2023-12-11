@@ -1,0 +1,38 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+      - chmod a+x /usr/local/bin/yq
+      - cd $CODEBUILD_SRC_DIR
+      - echo "List Runtimes"
+      - aws --version
+      - npm --version
+      - yq --version
+#      - echo $CROSS_ACCOUNT_ROLE
+#      - echo $CF_EXECUTION_ROLE
+      - echo 'TARGET_STAGE = ' $TARGET_STAGE
+      - npm install -g serverless
+      - sls --version
+      - export SLS_DEBUG=*
+      - chmod +x deployer/sls-deploy.sh
+#      - chmod +x aws-profile-setup.sh
+
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - ls
+      - echo "Start Deploy"
+#      - . ./aws-profile-setup.sh
+      - cd deployer
+      - bash sls-deploy.sh
+artifacts:
+  files:
+    - "**/*"
+cache:
+  paths:
+    - "/root/.m2/**/*"
+    - "/root/.npm/**/*"
+    - "node_modules/**/*"

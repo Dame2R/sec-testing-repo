@@ -1,0 +1,17 @@
+requestUserHandler:
+  handler: com.porsche.dpp.prod.newrelic.sls.integration.user.request.service.handlers.RequestUserHandler::handleRequest
+  name: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}-requestUser
+  role: requestUserRole
+  memorySize: 1024
+  timeout: 30
+  DependsOn:
+    - otelCollectorConfigLayer
+  TracingConfig:
+    Mode: Active
+  layers:
+    - arn:aws:lambda:${self:provider.region}:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-0:1
+    - !Ref OtelCollectorConfigLayerLambdaLayer
+  events:
+    - http:
+        path: api/v1/user
+        method: post

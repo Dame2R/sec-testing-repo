@@ -1,0 +1,14 @@
+{
+  "name": "newrelic-serverless-integration-master-security-tests-iac",
+  "type": "TEST",
+  "exportConfig": {
+    "exportConfigType": "S3",
+    "s3Destination": {
+      "bucket": "security-tests-artifacts",
+      "bucketOwner": "113224084033",
+      "path": "checkov/reports/",
+      "packaging": "ZIP",
+      "encryptionDisabled": true
+    }
+  }
+}

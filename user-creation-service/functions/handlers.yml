@@ -1,0 +1,22 @@
+createUserHandler:
+  handler: com.porsche.dpp.prod.newrelic.sls.integration.user.creation.service.handlers.CreateUserHandler::handleRequest
+  name: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}-createUser
+  role: createUserRole
+  memorySize: 1024
+  timeout: 60
+  DependsOn:
+    - otelCollectorConfigLayer
+  TracingConfig:
+    Mode: Active
+  layers:
+    - arn:aws:lambda:${self:provider.region}:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-28-0:1
+    - !Ref OtelCollectorConfigLayerLambdaLayer
+  events:
+      - s3:
+          bucket: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-user-requests-bucket
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: requests/
+            - suffix: .json
+          existing: true
+          forceDeploy: true

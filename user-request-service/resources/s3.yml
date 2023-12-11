@@ -1,0 +1,18 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Cloudformation template to create s3 buckets  
+Resources:
+  userRequestsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-user-requests-bucket
+      VersioningConfiguration:
+        Status: Enabled
+      LifecycleConfiguration:
+        Rules:
+          - ExpirationInDays: 90
+            Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true

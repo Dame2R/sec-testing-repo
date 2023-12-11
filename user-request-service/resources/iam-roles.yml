@@ -1,0 +1,44 @@
+Resources:
+   requestUserRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}-requestUser # required if you want to use 'serverless deploy --function' later on
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service:
+                  - lambda.amazonaws.com
+              Action: sts:AssumeRole
+     # note that these rights are needed if you want your function to be able to communicate with resources within your vpc
+   requestUserPolicy:   
+     Type: AWS::IAM::ManagedPolicy             
+     Properties:
+      Roles: [!Ref requestUserRole]
+      ManagedPolicyName: ${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}-requestUser 
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow" # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: "*"
+              #- !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-${self:service}-requestUser*"
+          - Effect: "Allow" # note that these rights are given in the default policy and are required if you want logs out of your lambda(s)
+            Action:
+              - xray:PutTraceSegments
+              - xray:PutTelemetryRecords
+            Resource: "*"
+#          - Effect: "Allow"
+#            Action:
+#              - s3:PutObject
+#            Resource:
+#              - !Sub "arn:aws:s3:::${opt:stage, self:provider.stage}-${param:owner, self:provider.owner}-newrelic-sls-int-user-requests-bucket*"
+
+          - Effect: "Allow"
+            Action:
+              - s3:*
+            Resource: "*"

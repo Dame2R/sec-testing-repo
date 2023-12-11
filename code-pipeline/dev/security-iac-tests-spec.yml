@@ -1,0 +1,49 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - echo 'TARGET_STAGE = ' $TARGET_STAGE
+      - echo 'M2_USERNAME = ' $M2_USERNAME
+      - echo 'M2_PASSWORD = ' $M2_PASSWORD
+      - envsubst < settings_template.xml > settings.xml
+      - chmod +x security/iac-tests.sh
+      - echo "Laden des Docker-Images aus der Tarball-Datei"
+
+  pre_build:
+    commands:
+      - COMMIT_ID=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION)
+      - DATE=$(date +%Y-%m-%d)
+      - cd $CODEBUILD_SRC_DIR
+      - docker pull dame2r/checkov-docker:latest
+      - echo $AWS_ACCESS_KEY_ID
+  
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+      - echo "Starting IAC Tests"
+      - docker run --rm -v $CODEBUILD_SRC_DIR:/src -e COMMIT_ID=$COMMIT_ID dame2r/checkov-docker bash /src/security/iac-tests.sh
+      - echo "Ended IAC Tests"
+      - echo "Please check reportings in CodeBuild Stage or Security Hub"
+
+artifacts:
+  files:
+    - "**/*"
+
+reports: 
+  checkov-reports:
+    files: 
+      - '**/checkov-report-*.xml'
+    file-format: 'JUNITXML' 
+    base-directory: '$CODEBUILD_SRC_DIR'
+
+cache:
+  paths:
+    - "/root/.m2/**/*"
+    - "/root/.npm/**/*"
+    - "node_modules/**/*"
+
+

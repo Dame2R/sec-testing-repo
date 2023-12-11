@@ -1,0 +1,44 @@
+version: 0.2
+phases:
+  install:
+    runtime-versions:
+      java: corretto8
+    commands:
+      - echo "List Runtimes"
+      - aws --version
+      - java -version
+      - mvn -version
+      - npm --version
+      - cd $CODEBUILD_SRC_DIR
+      - echo 'TARGET_STAGE = ' $TARGET_STAGE
+      - echo 'M2_USERNAME = ' $M2_USERNAME
+      - echo 'M2_PASSWORD = ' $M2_PASSWORD
+      - envsubst < settings_template.xml > settings.xml
+#      - chmod +x aws-profile-setup.sh
+  build:
+    commands:
+      - cd $CODEBUILD_SRC_DIR
+#      - . ./aws-profile-setup.sh
+      - mvn clean install -U -P${TARGET_STAGE}-qa -s settings.xml --fail-at-end
+      # - mvn clean install -U -T 8 -s settings.xml --fail-at-end
+#      - mvn deploy -s settings.xml
+#      - mvn surefire-report:report -s settings.xml
+#      - mvn jacoco:report -s settings.xml
+#reports:
+#  integration-tests-reports: # CodeBuild will create a report group called "surefire-reports".
+#    files: #Store all of the files
+#      - "**/*"
+#    base-directory: "**/target/surefire-reports" # Location of the reports
+#  test-coverage-reports: # CodeBuild will create a report group called "jacoco-reports".
+#    files: # Store all of the files
+#      - "**/*"
+#    base-directory: "**/site/jacoco" # Location of the reports
+#    file-format: "JACOCOXML"
+artifacts:
+  files:
+    - "**/*"
+cache:
+  paths:
+    - "/root/.m2/**/*"
+    - "/root/.npm/**/*"
+    - "node_modules/**/*"

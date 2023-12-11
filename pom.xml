@@ -1,0 +1,218 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.porsche.dpp.prod</groupId>
+	<artifactId>newrelic-serverless-integration</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<properties>
+		<!-- ================== aws lambda dependencies ================== -->
+		<aws-lambda-java-core.version>1.2.1</aws-lambda-java-core.version>
+		<aws-lambda-java-events.version>3.2.0</aws-lambda-java-events.version>
+		<aws-lambda-java-log4j2.version>1.3.0</aws-lambda-java-log4j2.version>
+		<!-- ================== aws sdk dependencies ================== -->
+		<awsjavasdk.version>2.18.1</awsjavasdk.version>
+		<reactive-streams.version>1.0.4</reactive-streams.version>
+		<!-- ================== logging dependencies ================== -->
+		<log4j.version>2.17.1</log4j.version>
+		<compiler.source.version>1.8</compiler.source.version>
+		<compiler.target.version>1.8</compiler.target.version>
+		<aws-logging-helper.version>1.5.0</aws-logging-helper.version>
+		<!-- ================== 3rd party dependencies ================== -->
+		<jackson.version>2.12.1</jackson.version>
+		<global.settings.encoding>UTF-8</global.settings.encoding>
+		<sources.encoding>${global.settings.encoding}</sources.encoding>
+		<resources.encoding>${global.settings.encoding}</resources.encoding>
+
+		<!-- ================== OpenTelemetry ================== -->
+		<otel.traces.api.version>0.13.1</otel.traces.api.version>
+		<otel.metrics.api.version>1.10.0-alpha-rc.1</otel.metrics.api.version>
+		<opentelemetry-api.version>1.28.0</opentelemetry-api.version>
+		<opentelemetry-semconv.version>1.28.0-alpha</opentelemetry-semconv.version>
+		<aws-commons-lang.version>1.3.1-SNAPSHOT</aws-commons-lang.version>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- ================== aws lambda dependencies ================== -->
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-lambda-java-core</artifactId>
+				<version>${aws-lambda-java-core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-lambda-java-events</artifactId>
+				<version>${aws-lambda-java-events.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-lambda-java-log4j2</artifactId>
+				<version>${aws-lambda-java-log4j2.version}</version>
+			</dependency>
+			<!-- ================== aws sdk dependencies ================== -->
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3</artifactId>
+				<version>${awsjavasdk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>dynamodb</artifactId>
+				<version>${awsjavasdk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>dynamodb-enhanced</artifactId>
+				<version>${awsjavasdk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>url-connection-client</artifactId>
+				<version>${awsjavasdk.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.reactivestreams</groupId>
+				<artifactId>reactive-streams</artifactId>
+				<version>${reactive-streams.version}</version>
+			</dependency>
+			<!-- ================== logging dependencies ================== -->
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-core</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.logging.log4j</groupId>
+				<artifactId>log4j-api</artifactId>
+				<version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mhp</groupId>
+				<artifactId>aws-logging-helper</artifactId>
+				<version>${aws-logging-helper.version}</version>
+			</dependency>
+			<!-- ================== 3rd party dependencies ================== -->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.dataformat</groupId>
+				<artifactId>jackson-dataformat-xml</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-joda</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mhp</groupId>
+				<artifactId>aws-commons-lang</artifactId>
+				<version>${aws-commons-lang.version}</version>
+			</dependency>
+			<!-- ================== OpenTelemetry ================== -->
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-api</artifactId>
+				<version>${opentelemetry-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry.instrumentation</groupId>
+				<artifactId>opentelemetry-instrumentation-annotations</artifactId>
+				<version>${opentelemetry-api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-api-trace</artifactId>
+				<version>${otel.traces.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-api-metrics</artifactId>
+				<version>${otel.metrics.api.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.opentelemetry</groupId>
+				<artifactId>opentelemetry-semconv</artifactId>
+				<version>${opentelemetry-semconv.version}</version>
+			</dependency>
+		</dependencies>
+
+
+
+
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${compiler.source.version}</source>
+					<target>${compiler.target.version}</target>
+					<encoding>${sources.encoding}</encoding>
+					<showDeprecation>true</showDeprecation>
+					<showWarnings>true</showWarnings>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+					<encoding>${resources.encoding}</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<!-- Maven Standard -->
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
+		<testResources>
+			<!-- Maven Standard -->
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>quick</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<skipTests>true</skipTests>
+				<stage>local</stage>
+			</properties>
+		</profile>
+	</profiles>
+	<modules>
+		<module>user-request-service</module>
+		<module>user-creation-service</module>
+		<module>aws-utils</module>
+	</modules>
+</project>
