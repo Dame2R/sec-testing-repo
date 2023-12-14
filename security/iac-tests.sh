@@ -26,8 +26,8 @@ for value in "${services[@]}"; do
   echo "Bypass immediate exit and catch later"
   set +e
 
-  echo "checkov -d . -s --soft-fail-on MEDIUM --bc-api-key ee1832f2-ae08-404e-974b-439e7905da92 --repo-id Dame2R/sec-testing-repo -o junitxml > checkov-report-$value-$COMMIT_ID.xml --framework cloudformation"
-  checkov -d . --soft-fail-on MEDIUM --bc-api-key ee1832f2-ae08-404e-974b-439e7905da92 --repo-id Dame2R/sec-testing-repo -o junitxml > checkov-report-$value-$COMMIT_ID.xml --framework cloudformation
+  echo "checkov -d . --soft-fail-on MEDIUM --external-checks-git https://github.com/Dame2R/checkov-custom-policies.git --bc-api-key 651257ba-5649-4c4f-b635-c40bf9c1493f --repo-id Dame2R/sec-testing-repo --framework cloudformation -o junitxml > checkov-report-$value-$COMMIT_ID.xml"
+  checkov -d . --soft-fail-on MEDIUM --external-checks-git https://github.com/Dame2R/checkov-custom-policies.git --bc-api-key 651257ba-5649-4c4f-b635-c40bf9c1493f --repo-id Dame2R/sec-testing-repo -o junitxml > checkov-report-$value-$COMMIT_ID.xml --framework cloudformation
   exit_code=$?
 
   echo "Exit Code after IaC-Scan: $final_exit_code"
@@ -40,7 +40,7 @@ for value in "${services[@]}"; do
   fi
 
 
-  echo "Handling and Reporting to Security Hub - is not implemented"
+  #echo "Handling and Reporting to Security Hub - is not implemented"
   #python3 /src/reporting-handler.py "checkov-report-$value-$COMMIT_ID.json"
   
   echo "***********************************************************************"
